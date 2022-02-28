@@ -3,6 +3,9 @@ const app = express();
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
+const User = require('./models/Users');
+const Session = require('./models/Sessions');
+
 const cors = require('cors');
 
 const mongoose = require('mongoose');
@@ -20,20 +23,6 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/views/index.html`);
 });
-
-let exerciseSessionSchema = new mongoose.Schema({
-  description: { type: String, required: true },
-  duration: { type: Number, required: true },
-  date: String,
-});
-
-let userSchema = new mongoose.Schema({
-  username: { type: String, required: true },
-  log: [exerciseSessionSchema],
-});
-
-let Session = mongoose.model('Session', exerciseSessionSchema);
-let User = mongoose.model('User', userSchema);
 
 app.post('/api/users', (request, response) => {
   let newUser = new User({ username: request.body.username });
