@@ -32,7 +32,9 @@ app.post('/api/users', (request, response) => {
       let responseObject = {};
       responseObject['username'] = savedUser.username;
       responseObject['_id'] = savedUser.id;
-      response.json(responseObject);
+      response.status(200).json(responseObject);
+    } else {
+      response.status(400).send(error);
     }
   });
 });
@@ -40,7 +42,9 @@ app.post('/api/users', (request, response) => {
 app.get('/api/users', (request, response) => {
   User.find({}, (error, arrayOfUsers) => {
     if (!error) {
-      response.json(arrayOfUsers);
+      response.status(200).json(arrayOfUsers);
+    } else {
+      response.status(400).send(error);
     }
   });
 });
