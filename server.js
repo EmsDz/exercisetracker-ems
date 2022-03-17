@@ -49,6 +49,34 @@ app.get('/api/users', (request, response) => {
   });
 });
 
+app.post('/api/users/:_id/exercises', (request, response) => {
+  let newSession = new Session({
+    description: request.body.description,
+    duration: parseInt(request.body.duration),
+    date: request.body.date,
+  });
+
+  if (newSession.date === '') {
+    newSession.date = new Date().toISOString().substring(0, 10);
+  }
+
+  let id = request.params._id;
+  User.findOne({ _id: id }, function (err, result) {
+    if (!result) response.send(`${id} is not found`);
+    else {
+      result.log.push(newSession);
+      response.json({
+        _id: id,
+        username: result.username,
+        duration: newSession.duration,
+        date: newSession.date,
+        description: newSession.description,
+      });
+      result.save();
+    }
+  });
+});
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port);
 });
