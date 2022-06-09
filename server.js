@@ -49,6 +49,47 @@ app.get('/api/users', (request, response) => {
   });
 });
 
+
+
+app.get('/api/users/:_id/logs', (request, response) => {
+  User.findById(req.params._id, (error, result) => {
+    if (!error) {
+      let responseObject = result;
+
+      if (request.query.from || request.query.to) {
+        let fromDate = new Date(0);
+        let toDate = new Date();
+
+        if (request.query.from) {
+          fromDate = new Date(request.query.from);
+        }
+
+        if (request.query.to) {
+          toDate = new Date(request.query.to);
+        }
+
+        fromDate = fromDate.getTime();
+        toDate = toDate.getTime();
+
+        responseObject.log = responseObject.log.filter((session) => {
+          let sessionDate = new Date(session.date).getTime();
+
+          return sessionDate >= fromDate && sessionDate <= toDate;
+        });
+      }
+
+      if (request.query.limit) {
+        responseObject.log = responseObject.log.slice(0, request.query.limit);
+      }
+
+      responseObject = responseObject.toJSON();
+      responseObject['count'] = result.log.length;
+      response.json(responseObject);
+    }
+  });
+});
+
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port);
 });
